@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { create } from 'zustand';
 
 export interface FormState {
   firstName: string;
@@ -13,6 +13,7 @@ export interface FormState {
   activeStep: number;
   setFormData: (newData: Partial<FormState>) => void;
   setActiveStep: (step: number) => void;
+  resetForm: () => void;
 }
 
 export const useFormStore = create<FormState>()(
@@ -29,6 +30,18 @@ export const useFormStore = create<FormState>()(
       activeStep: 0,
       setFormData: (newData) => set((state) => ({ ...state, ...newData })),
       setActiveStep: (step) => set({ activeStep: step }),
+      resetForm: () =>
+        set({
+          firstName: '',
+          lastName: '',
+          email: '',
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          username: '',
+          activeStep: 0,
+        }),
     }),
     {
       name: 'form-storage',

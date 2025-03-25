@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Stepper,
@@ -8,14 +7,18 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import { formConfig } from '../config/formConfig';
 import { FormState, useFormStore } from '../store/formStore';
+import { useForm, Controller } from 'react-hook-form';
+import { formConfig } from '../config/formConfig';
+import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 
-export default function VerticalLinearStepper() {
+const StepperForm = () => {
+  const navigate = useNavigate();
+
   const { activeStep, setActiveStep, setFormData, ...formData } =
     useFormStore();
+
   const {
     control,
     handleSubmit,
@@ -25,11 +28,10 @@ export default function VerticalLinearStepper() {
   const handleBack = () => setActiveStep(activeStep - 1);
 
   const onSubmit = (data: Partial<FormState>) => {
-    console.log(data);
-
     setFormData(data);
     if (activeStep === Object.keys(formConfig).length - 1) {
       console.log('Form Submitted:', data);
+      navigate('/user-info');
     } else {
       setActiveStep(activeStep + 1);
     }
@@ -40,7 +42,7 @@ export default function VerticalLinearStepper() {
   );
 
   return (
-    <Box sx={{ maxWidth: 400 }}>
+    <Box sx={{ minWidth: 300, maxWidth: 400 }}>
       <Stepper activeStep={activeStep} orientation='vertical'>
         {steps.map((step, index) => (
           <Step key={step.label}>
@@ -51,7 +53,20 @@ export default function VerticalLinearStepper() {
                 {step.fields.map((field) => (
                   <Box key={field.name} sx={{ mb: 2 }}>
                     <Controller
-                      name={field.name}
+                      name={
+                        field.name as Extract<
+                          keyof FormState,
+                          | 'firstName'
+                          | 'lastName'
+                          | 'email'
+                          | 'street'
+                          | 'city'
+                          | 'state'
+                          | 'zipCode'
+                          | 'username'
+                          | 'resetForm'
+                        >
+                      }
                       control={control}
                       rules={{
                         required: field.required,
@@ -63,8 +78,10 @@ export default function VerticalLinearStepper() {
                           {...controllerField}
                           label={field.label}
                           fullWidth
-                          error={!!errors[field.name]}
-                          helperText={errors[field.name]?.message?.toString()}
+                          error={!!errors[field.name as keyof typeof errors]}
+                          helperText={errors[
+                            field.name as keyof typeof errors
+                          ]?.message?.toString()}
                         />
                       )}
                     />
@@ -93,4 +110,6 @@ export default function VerticalLinearStepper() {
       </Stepper>
     </Box>
   );
-}
+};
+
+export default StepperForm;
