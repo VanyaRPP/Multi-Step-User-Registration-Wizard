@@ -1,7 +1,11 @@
-import './App.scss';
+import StepperForm from './components/StepperForm';
 
 function App() {
-  return <></>;
+  return (
+    <div className='container'>
+      <StepperForm />
+    </div>
+  );
 }
 
 export default App;
